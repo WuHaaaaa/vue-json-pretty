@@ -1,8 +1,8 @@
 {
-  "name": "vue-json-pretty",
-  "version": "1.7.0-rc.2",
-  "description": "A JSON tree view component that is easy to use and also supports data selection.",
-  "author": "leezng <im.leezng@gmail.com>",
+  "name": "vue-json-pretty-highlight-row",
+  "version": "1.7.1.1",
+  "description": "个人使用的vue-json-pretty高亮版本，参考地址：https://github.com/leezng/vue-json-pretty",
+  "author": "ruanheng <ruanheng1995@gmail.com>",
   "main": "lib/vue-json-pretty.js",
   "scripts": {
     "dev": "node build/dev-server.js",
@@ -10,19 +10,20 @@
     "build:example": "cross-env EXAMPLE_ENV=true node build/build.js",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run e2e",
-    "lint": "eslint --ext .js,.vue src test/e2e/specs example"
+    "lint": "eslint --ext .js,.vue src test/e2e/specs example",
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:leezng/vue-json-pretty.git"
+    "url": "git@github.com:WuHaaaaa/vue-json-pretty-highlight-row.git"
   },
-  "homepage": "https://leezng.github.io/vue-json-pretty",
+  "homepage": "https://github.com/WuHaaaaa/vue-json-pretty-highlight-row",
   "keywords": [
     "vue",
     "json",
     "format",
     "pretty",
-    "vue-component"
+    "vue-component",
+    "customize"
   ],
   "license": "MIT",
   "bugs": {
