@@ -57,4 +57,4 @@ data() {
 
 ## 实际效果
 
-![](./md-image/chrome_Ne1QTle0M1.png)
+![](../md-image/chrome_Ne1QTle0M1.png)
