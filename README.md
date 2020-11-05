@@ -1,109 +1,60 @@
-# vue-json-pretty
+# vue-json-pretty-highlight-row
 
 [![Build Status](https://travis-ci.org/leezng/vue-json-pretty.svg?branch=master)](https://travis-ci.org/leezng/vue-json-pretty)
 [![npm package](https://img.shields.io/npm/v/vue-json-pretty.svg)](https://www.npmjs.org/package/vue-json-pretty)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/leezng/vue-json-pretty/blob/master/LICENSE)
+![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)
 
-A vue 2.x component for rendering JSON data as a tree structure.
+## 此版本为vue-json-pretty的Fork版本
 
-- As a JSON Formatter
-- Get item data from JSON
+需求中有日志对比，需要对比新旧数据，所以打算用两个控件来实现
 
-## Links
+只是为了实现一个高亮的功能，以上
 
-- [Demo](https://leezng.github.io/vue-json-pretty)
-- [Github](https://github.com/leezng/vue-json-pretty)
-- [NPM](https://www.npmjs.com/package/vue-json-pretty)
-- [中文文档](./README.zh-CN.md)
+详细用法参考：[https://github.com/leezng/vue-json-pretty](https://github.com/leezng/vue-json-pretty)
 
-## Install
-
-```bash
-npm install vue-json-pretty --save
-```
-
-## Usage
-
-The CSS file is included separately and needs to be imported manually. You can either import CSS globally in your app (if supported by your framework) or directly from the component.
+## 高亮功能
 
 ```vue
-<template>
-  <div>
-    ...
-    <vue-json-pretty
-      :path="'res'"
-      :data="{ key: 'value' }"
-      @click="handleClick">
-    </vue-json-pretty>
-  </div>
-</template>
-
-<script>
-import VueJsonPretty from 'vue-json-pretty'
-import 'vue-json-pretty/lib/styles.css'
-
-export default {
-  components: {
-    VueJsonPretty
-  }
-}
-</script>
+<vue-json-pretty
+                 ...
+                 :highlight-array="highlightArray"
+                 ...
+                 />
 ```
-
-## Nuxt.js
-
-1. In `plugins/vue-json-pretty.js`
-
-```
-import Vue from 'vue'
-import VueJsonPretty from 'vue-json-pretty'
-
-Vue.component("vue-json-pretty", VueJsonPretty)
-```
-
-2. In `nuxt.config.js`
 
 ```js
-css: [
-  'vue-json-pretty/lib/styles.css'
-],
-plugins: [
-  '@/plugins/vue-json-pretty'
-],
+data() {
+    return {
+        ...,
+        path: 'res',	//这个节点是根节点，官方Demo有，点击节点会触发
+        data:[{
+            news_id: 51184,
+            title: 'iPhone X Review: Innovative future with real black technology',
+            source: 'Netease phone'
+        }, {
+            news_id: 51183,
+            title: 'Traffic paradise: How to design streets for people and unmanned vehicles in the future?',
+            source: 'Netease smart',
+            link: 'http://netease.smart/traffic-paradise/1235'
+        }, {
+            news_id: 51182,
+            title: 'Teslamask\'s American Business Relations: The government does not pay billions to build factories',
+            source: 'AI Finance',
+            members: ['Daniel', 'Mike', 'John']
+    	}],
+		highlightArray: [
+          "res[2].source"//这里res，就表示上面的res
+        ]
+	}
+}
 ```
 
-## Props
+## 说明
 
-- If you are using only the normal features (JSON pretty), just focus on the `base` properties.
-- If you are using higher features (Get data), you can use `base` and `higher` attributes.
+| 属性              | 级别 | 说明         | 类型  | 默认值 |
+| ----------------- | ---- | ------------ | ----- | ------ |
+| highlight-array ✨ | 高级 | 添加高亮节点 | Array | -      |
 
-| Attribute | Level | Description | Type | Default |
-|-------- |-------- |-------- |-------- | -------- |
-| data | normal | json data | JSON object | - |
-| deep | normal | data depth, data larger than this depth will not be expanded | number | Infinity |
-| showLength | normal | whether to show the length when closed | boolean | false |
-| showLine | normal | whether to show the line | boolean | true |
-| showDoubleQuotes | normal | whether to show doublequotes on key | boolean | true |
-| highlightMouseoverNode | normal | highlight current node when mouseover | boolean | false |
-| v-model | higher | defines value when the tree can be selected | string, array | -, [] |
-| path | higher | root data path | string | root |
-| pathChecked | higher | defines the selected data path | array | [] |
-| pathSelectable | higher | defines whether a data path supports selection | Function(itemPath, itemData) | - |
-| selectableType | higher | defines the selected type, this feature is not supported by default | enum: -, multiple, single  | - |
-| showSelectController | higher | whether to show the select controller at left | boolean | false |
-| selectOnClickNode | higher | whether to change selected value when click node | boolean | true |
-| highlightSelectedNode | higher | highlight current node when selected | boolean | true |
-| collapsedOnClickBrackets | higher | collapsed control | boolean | true |
-| customValueFormatter | higher | a function that can return different html or strings to display for values in the data. | Function(data, key, parent, defaultFormatted) | - |
+## 实际效果
 
-## Events
-
-| Event Name | Description | Callback Parameters |
-|---------- |-------- |---------- |
-| click  | triggered when a data item is clicked | (path, data) |
-| change  | triggered when the selected value changed (only the selectableType not null) | (newVal, oldVal) |
-
-## Major Contributors
-
-[![](https://avatars3.githubusercontent.com/u/153197?v=3&s=50)](https://github.com/rchl)
-[![](https://avatars1.githubusercontent.com/u/445616?v=3&s=50)](https://github.com/blackmad)
+![](./md-image/chrome_Ne1QTle0M1.png)
