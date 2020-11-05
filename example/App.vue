@@ -6,7 +6,7 @@
       </h2>
       <div class="block">
         <h3>JSON:</h3>
-        <textarea v-model="val" />
+        <textarea v-model="val"/>
 
         <h3>Options:</h3>
         <div class="options">
@@ -90,14 +90,14 @@
       </h2>
       <div class="block">
         <h3>JSON:</h3>
-        <textarea v-model="val" />
+        <textarea v-model="val"/>
 
         <h3>Options:</h3>
         <div class="options">
           <div>
             <label>selectableType</label>
             <select v-model="selectableType">
-              <option label="-" />
+              <option label="-"/>
               <option>single</option>
               <option>multiple</option>
             </select>
@@ -191,7 +191,9 @@
         <div>{{ value }}</div>
         <h3>Current Click:</h3>
         <div>path: {{ itemPath }}</div>
-        <div>data: <pre>{{ itemData }}</pre></div>
+        <div>data:
+          <pre>{{ itemData }}</pre>
+        </div>
       </div>
       <div class="block">
         <h3>vue-json-pretty:</h3>
@@ -204,6 +206,7 @@
           :show-double-quotes="showDoubleQuotes"
           :highlight-mouseover-node="highlightMouseoverNode"
           :highlight-selected-node="highlightSelectedNode"
+          :highlight-array="highlightArray"
           :show-length="showLength"
           :show-line="showLine"
           :select-on-click-node="selectOnClickNode"
@@ -231,12 +234,9 @@
 </template>
 
 <script>
-import VueJsonPretty from 'src'
+  import VueJsonPretty from 'src'
 
-const defaultData = {
-  status: 200,
-  error: '',
-  data: [{
+  const defaultData = [{
     news_id: 51184,
     title: 'iPhone X Review: Innovative future with real black technology',
     source: 'Netease phone'
@@ -251,74 +251,76 @@ const defaultData = {
     source: 'AI Finance',
     members: ['Daniel', 'Mike', 'John']
   }]
-}
 
-export default {
-  name: 'App',
-  components: {
-    VueJsonPretty
-  },
-  data () {
-    return {
-      renderOK: true,
-      val: JSON.stringify(defaultData),
-      data: defaultData,
-      value: 'res.error',
-      selectableType: 'single',
-      showSelectController: true,
-      showLength: false,
-      showLine: true,
-      showDoubleQuotes: true,
-      highlightMouseoverNode: true,
-      highlightSelectedNode: true,
-      selectOnClickNode: true,
-      collapsedOnClickBrackets: true,
-      useCustomLinkFormatter: false,
-      path: 'res',
-      deep: 3,
-      itemData: {},
-      itemPath: '',
-    }
-  },
-  watch: {
-    val(newVal) {
-      try {
-        this.data = JSON.parse(this.val)
-      } catch (err) {
-        console.log('JSON ERROR')
+  export default {
+    name: 'App',
+    components: {
+      VueJsonPretty
+    },
+    data() {
+      return {
+        renderOK: true,
+        val: JSON.stringify(defaultData),
+        data: defaultData,
+        value: 'res.error',
+        selectableType: 'single',
+        showSelectController: true,
+        showLength: false,
+        showLine: true,
+        showDoubleQuotes: true,
+        highlightMouseoverNode: true,
+        highlightSelectedNode: true,
+        selectOnClickNode: true,
+        collapsedOnClickBrackets: true,
+        useCustomLinkFormatter: false,
+        path: 'res',
+        deep: 3,
+        itemData: {},
+        itemPath: '',
+        highlightArray: [
+          "res[2].source"
+        ]
       }
     },
-    selectableType (newVal) {
-      this.renderOK = false
-      if (newVal === 'single') {
-        this.value = 'res.error'
-      } else if (newVal === 'multiple') {
-        this.value = ['res.error', 'res.data[0].title']
+    watch: {
+      val(newVal) {
+        try {
+          this.data = JSON.parse(this.val)
+        } catch (err) {
+          console.log('JSON ERROR')
+        }
+      },
+      selectableType(newVal) {
+        this.renderOK = false
+        if (newVal === 'single') {
+          this.value = 'res.error'
+        } else if (newVal === 'multiple') {
+          this.value = ['res.error', 'res.data[0].title']
+        }
+        // 重新渲染, 因为2中情况的v-model格式不同
+        this.$nextTick(() => {
+          this.renderOK = true
+        })
       }
-      // 重新渲染, 因为2中情况的v-model格式不同
-      this.$nextTick(() => {
-        this.renderOK = true
-      })
-    }
-  },
-  methods: {
-    handleClick (path, data, treeName = '') {
-      console.log('click: ', path, data, treeName)
-      this.itemPath = path
-      this.itemData = !data ? data + '' : data // 处理 data = null 的情况
     },
-    handleChange (newVal, oldVal) {
-      console.log('newVal: ', newVal, ' oldVal: ', oldVal)
-    },
-    customLinkFormatter (data, key, parent, defaultFormatted) {
-      if (data.startsWith('http://')) {
-        return `<a style="color:red;" href="${data}" target="_blank">"${data}"</a>`;
-      } else {
-        return defaultFormatted;
+    methods: {
+      handleClick(path, data, treeName = '') {
+        console.log('click: ', path, data, treeName)
+        this.itemPath = path
+        this.itemData = !data ? data + '' : data // 处理 data = null 的情况
+      },
+      handleChange(newVal, oldVal) {
+        console.log('newVal: ', newVal, ' oldVal: ', oldVal)
+      },
+      customLinkFormatter(data, key, parent, defaultFormatted) {
+        if (data.startsWith('http://')) {
+          return `<a style="color:red;" href="${data}" target="_blank">"${data}"</a>`;
+        } else {
+          return defaultFormatted;
+        }
       }
     }
   }
-}
 </script>
 
 <style lang="less">
@@ -326,27 +328,33 @@ export default {
     margin: 0;
     background-color: #f9f9f9;
   }
+
   .example {
     position: relative;
     padding: 0 15px;
     margin: 0 auto;
     width: 1200px;
   }
+
   .example-box {
     margin: 0 -15px;
     overflow: hidden;
+
     h3 {
       display: inline-block;
     }
+
     .title {
       text-align: center;
     }
+
     .block {
       float: left;
       padding: 0 15px;
       width: 50%;
       box-sizing: border-box;
     }
+
     input,
     select,
     textarea {
@@ -355,23 +363,27 @@ export default {
       border-radius: 5px;
       border: 1px solid #bbb;
       font-family: inherit;
+
       &:focus {
         outline: none;
         border-color: #1d8ce0;
         box-shadow: 0 0 3px #1d8ce0;
       }
     }
+
     textarea {
       width: 100%;
       height: 150px;
       resize: vertical;
     }
+
     pre {
       margin: 0;
       font-family: Consolas;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .options {
       font-size: 14px;
     }

@@ -64,6 +64,7 @@
           :show-line="showLine"
           :highlight-mouseover-node="highlightMouseoverNode"
           :highlight-selected-node="highlightSelectedNode"
+          :highlight-array="highlightArray"
           :path="getChildPath(key)"
           :path-selectable="pathSelectable"
           :selectable-type="selectableType"
@@ -90,6 +91,7 @@
     <simple-text
       v-else
       :custom-value-formatter="customValueFormatter"
+      :class="{'highlight-row':showHighlightRow}"
       :show-double-quotes="showDoubleQuotes"
       :show-comma="notLastKey"
       :parent-data="parentData"
@@ -112,7 +114,7 @@
   import VueRadio from './radio'
   import BracketsLeft from './brackets-left'
   import BracketsRight from './brackets-right'
-  import { getDataType } from 'src/utils'
+  import {getDataType} from 'src/utils'
 
   export default {
     name: 'VueJsonPretty',
@@ -148,7 +150,7 @@
       // 数据层级顶级路径
       path: {
         type: String,
-        default: 'root'
+        default: 'res'
       },
       // 定义数据层级支持的选中方式, 默认无该功能
       selectableType: {
@@ -217,10 +219,18 @@
       currentKey: {
         type: [Number, String],
         default: ''
-      }
+      },
       /* outer props */
+
+      // 节点高亮
+      highlightArray: {
+        type: Array,
+        default() {
+          return []
+        }
+      }
     },
-    data () {
+    data() {
       return {
         visible: this.currentDeep <= this.deep,
         isMouseover: false,
@@ -229,17 +239,17 @@
     },
     computed: {
       model: {
-        get () {
+        get() {
           const defaultVal = this.selectableType === 'multiple' ? [] : this.selectableType === 'single' ? '' : null
           return this.value || defaultVal
         },
-        set (val) {
+        set(val) {
           this.$emit('input', val)
         }
       },
 
       // 获取当前 data 中最后一项的 key 或 索引, 便于界面判断是否添加 ","
-      lastKey () {
+      lastKey() {
         if (Array.isArray(this.parentData)) {
           return this.parentData.length - 1
         } else if (this.isObject(this.parentData)) {
@@ -250,26 +260,26 @@
       },
 
       // 是否不是最后一项
-      notLastKey () {
+      notLastKey() {
         return this.currentKey !== this.lastKey
       },
 
       // 当前的树是否支持选中功能
-      selectable () {
+      selectable() {
         return this.pathSelectable(this.path, this.data) && (this.isMultiple || this.isSingle)
       },
 
       // 多选模式
-      isMultiple () {
+      isMultiple() {
         return this.selectableType === 'multiple'
       },
 
       // 单选模式
-      isSingle () {
+      isSingle() {
         return this.selectableType === 'single'
       },
 
-      isSelected () {
+      isSelected() {
         if (this.isMultiple) {
           return this.model.includes(this.path)
         } else if (this.isSingle) {
@@ -279,21 +289,33 @@
         }
       },
 
-      prettyKey () {
+      prettyKey() {
         return this.showDoubleQuotes ? `"${this.currentKey}"` : this.currentKey
       },
 
-      propsError () {
+      propsError() {
         const error = this.selectableType && !this.selectOnClickNode && !this.showSelectController
         return error ? 'When selectableType is not null, selectOnClickNode and showSelectController cannot be false at the same time, because this will cause the selection to fail.' : ''
-      }
+      },
+
+      /*节点高亮*/
+      showHighlightRow() {
+        if (!!this.highlightArray && this.highlightArray.length > 0) {
+          if (this.highlightArray.indexOf(this.path) >= 0) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+        return false;
+      },
     },
     watch: {
-      deep (newVal) {
+      deep(newVal) {
         this.visible = this.currentDeep <= newVal
       },
       propsError: {
-        handler (message) {
+        handler(message) {
           if (message) {
             throw new Error(`[vue-json-pretty] ${message}`)
           }
@@ -302,7 +324,8 @@
       }
     },
     methods: {
-      handleValueChange (emitType) {
+
+      handleValueChange(emitType) {
         if (this.isMultiple && (emitType === 'checkbox' || emitType === 'tree')) {
           // handle multiple
           const index = this.model.findIndex(item => item === this.path)
@@ -332,7 +355,7 @@
        * emit click event
        * @param  {string} emitType tree/checkbox/radio
        */
-      handleClick (e) {
+      handleClick(e) {
         // Event can not be stopPropagation, because user may be listening the click event.
         // So use _uid to simulated.
         if (e._uid && e._uid !== this._uid) return
@@ -345,39 +368,39 @@
       },
 
       // handle children's click, and propagation
-      handleItemClick (path, data) {
+      handleItemClick(path, data) {
         this.$emit('click', path, data)
       },
 
       // handle children's change, and propagation
-      handleItemChange (newVal, oldVal) {
+      handleItemChange(newVal, oldVal) {
         // 可选的时候change事件才有意义
         if (this.selectable) {
           this.$emit('change', newVal, oldVal)
         }
       },
 
-      handleMouseover () {
+      handleMouseover() {
         // 可选择的树|普通展示树, 都支持mouseover
         this.highlightMouseoverNode && (this.selectable || this.selectableType === '') && (this.isMouseover = true)
       },
 
-      handleMouseout () {
+      handleMouseout() {
         this.highlightMouseoverNode && (this.selectable || this.selectableType === '') && (this.isMouseover = false)
       },
 
       // 是否对象
-      isObject (value) {
+      isObject(value) {
         return getDataType(value) === 'object'
       },
 
-      getChildPath (key) {
+      getChildPath(key) {
         return this.path + (Array.isArray(this.data) ? `[${key}]` : key.includes('.') ? `["${key}"]` : `.${key}`)
       }
     },
     // 捕获一个来自子组件的错误
     //    因为是递归组件，因此错误只对外暴露一次，子组件的错误不再对外传递
-    errorCaptured () {
+    errorCaptured() {
       return false
     }
   }
