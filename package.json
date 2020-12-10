@@ -1,6 +1,6 @@
 {
   "name": "vue-json-pretty-highlight-row",
-  "version": "1.7.1.1",
+  "version": "1.7.2.1",
   "description": "个人使用的vue-json-pretty高亮版本，参考地址：https://github.com/leezng/vue-json-pretty",
   "author": "ruanheng <ruanheng1995@gmail.com>",
   "main": "lib/vue-json-pretty.js",
@@ -10,7 +10,7 @@
     "build:example": "cross-env EXAMPLE_ENV=true node build/build.js",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run e2e",
-    "lint": "eslint --ext .js,.vue src test/e2e/specs example",
+    "lint": "eslint --ext .js,.vue src test/e2e/specs example"
   },
   "repository": {
     "type": "git",

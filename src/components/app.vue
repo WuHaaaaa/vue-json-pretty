@@ -28,64 +28,66 @@
     </template>
 
     <template v-if="Array.isArray(data) || isObject(data)">
-      <!-- 左闭合 -->
-      <brackets-left
-        :visible.sync="visible"
-        :data="data"
-        :show-length="showLength"
-        :collapsed-on-click-brackets="collapsedOnClickBrackets"
-        :show-comma="notLastKey"
-      >
+      <div :class="{'highlight-row':showHighlightRow}">
+        <!-- 左闭合 -->
+        <brackets-left
+          :visible.sync="visible"
+          :data="data"
+          :show-length="showLength"
+          :collapsed-on-click-brackets="collapsedOnClickBrackets"
+          :show-comma="notLastKey"
+        >
         <span
           v-if="currentDeep > 1 && !Array.isArray(parentData)"
           class="vjs-key"
         >
           {{ prettyKey }}:
         </span>
-      </brackets-left>
+        </brackets-left>
 
-      <!-- 数据内容, data 为对象时, key 表示键名, 为数组时表示索引 -->
-      <div
-        v-for="(item, key) in data"
-        v-show="visible"
-        :key="key"
-        :class="{
+        <!-- 数据内容, data 为对象时, key 表示键名, 为数组时表示索引 -->
+        <div
+          v-for="(item, key) in data"
+          v-show="visible"
+          :key="key"
+          :class="{
           'vjs-tree__content': true,
           'has-line': showLine
         }"
-      >
-        <vue-json-pretty
-          v-model="model"
-          :parent-data="data"
-          :data="item"
-          :deep="deep"
-          :show-length="showLength"
-          :show-double-quotes="showDoubleQuotes"
-          :show-line="showLine"
-          :highlight-mouseover-node="highlightMouseoverNode"
-          :highlight-selected-node="highlightSelectedNode"
-          :highlight-array="highlightArray"
-          :path="getChildPath(key)"
-          :path-selectable="pathSelectable"
-          :selectable-type="selectableType"
-          :show-select-controller="showSelectController"
-          :select-on-click-node="selectOnClickNode"
+        >
+          <vue-json-pretty
+            v-model="model"
+            :parent-data="data"
+            :data="item"
+            :deep="deep"
+            :show-length="showLength"
+            :show-double-quotes="showDoubleQuotes"
+            :show-line="showLine"
+            :highlight-mouseover-node="highlightMouseoverNode"
+            :highlight-selected-node="highlightSelectedNode"
+            :highlight-array="highlightArray"
+            :path="getChildPath(key)"
+            :path-selectable="pathSelectable"
+            :selectable-type="selectableType"
+            :show-select-controller="showSelectController"
+            :select-on-click-node="selectOnClickNode"
+            :collapsed-on-click-brackets="collapsedOnClickBrackets"
+            :current-key="key"
+            :current-deep="currentDeep + 1"
+            :custom-value-formatter="customValueFormatter"
+            @click="handleItemClick"
+            @change="handleItemChange"
+          />
+        </div>
+
+        <!-- 右闭合 -->
+        <brackets-right
+          :visible.sync="visible"
+          :data="data"
           :collapsed-on-click-brackets="collapsedOnClickBrackets"
-          :current-key="key"
-          :current-deep="currentDeep + 1"
-          :custom-value-formatter="customValueFormatter"
-          @click="handleItemClick"
-          @change="handleItemChange"
+          :show-comma="notLastKey"
         />
       </div>
-
-      <!-- 右闭合 -->
-      <brackets-right
-        :visible.sync="visible"
-        :data="data"
-        :collapsed-on-click-brackets="collapsedOnClickBrackets"
-        :show-comma="notLastKey"
-      />
     </template>
 
     <simple-text
